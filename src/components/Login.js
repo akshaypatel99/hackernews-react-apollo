@@ -1,6 +1,6 @@
-import { useMutation, gql } from '@apollo/client';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { gql, useMutation } from '@apollo/client';
+import { useHistory } from 'react-router';
 import { AUTH_TOKEN } from '../constants';
 
 const SIGNUP_MUTATION = gql`
@@ -19,15 +19,14 @@ const LOGIN_MUTATION = gql`
 	}
 `;
 
-function Login() {
+const Login = () => {
+	const history = useHistory();
 	const [formState, setFormState] = useState({
 		login: true,
 		email: '',
 		password: '',
 		name: '',
 	});
-
-	const navigate = useNavigate();
 
 	const [login] = useMutation(LOGIN_MUTATION, {
 		variables: {
@@ -36,7 +35,7 @@ function Login() {
 		},
 		onCompleted: ({ login }) => {
 			localStorage.setItem(AUTH_TOKEN, login.token);
-			navigate('/');
+			history.push('/');
 		},
 	});
 
@@ -48,13 +47,12 @@ function Login() {
 		},
 		onCompleted: ({ signup }) => {
 			localStorage.setItem(AUTH_TOKEN, signup.token);
-			navigate('/');
+			history.push('/');
 		},
 	});
-
 	return (
 		<div>
-			<h4 className='mv3'>{formState.login ? 'Login' : 'Sign Up'}</h4>
+			<h4 className='mv3'>{login ? 'Login' : 'Sign Up'}</h4>
 			<div className='flex flex-column'>
 				{!formState.login && (
 					<input
@@ -115,6 +113,6 @@ function Login() {
 			</div>
 		</div>
 	);
-}
+};
 
 export default Login;
